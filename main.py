@@ -1,4 +1,4 @@
-from pinlv.parsers.routledge import load_routledge_chinese_word_frequency_data
+from pinlv.chinese import load_routledge_chinese_word_frequency_data
 
 
 df = load_routledge_chinese_word_frequency_data()
