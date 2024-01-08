@@ -5,11 +5,24 @@ import pandas as pd
 DATA_DIR = "data"
 ROUTLEDGE_CHINESE_WORD_FREQUENCY_FILE = "routledge_chinese_word_frequency.txt"
 
-# TODO: Write this as a Context Free Grammar and use NLTK (?) to parse it.
-# Here is a tool to help visualize this: https://regex101.com/r/yzMkTg/1
-CHINESE_EXAMPLE_SPLITTING_REGEX = (
-    r"^(.*[\u4e00-\u9fff。！？?：.…]+[”]?)\s?([“]?[A-Za-z].*)$"
-)
+CHINESE_CHARACTERS = "\u4e00-\u9fff"
+CHINESE_PUNCTUATION = "。！？?：.…"
+ENGLISH_CHARACTERS = "A-Za-z"
+CLOSE_QUOTE = "”"
+OPEN_QUOTE = "“"
+
+# The example column mixes Chinese and English, so we need to split it.
+# Unfortunately, spaces are occasionally used in the Chinese sentences,
+# so calling split() doesn't help much. And not every English sentence starts
+# with a capital letter, and sometimes starts with a quote. It can be difficult
+# to determine if the quote belogs to the Chinese sentence or the English
+# sentence, since there isn't always a space separating them. Fortunately,
+# they distinguish betweeen open and close quotes, so we can use a regex.
+# This is a mess, as regexes often are, and would perhaps be better handled
+# by a Context Free Grammar. Howewver, this parses the entire Routledge
+# Chinese Word Frequency List, so it's fine for now.
+# Here is a tool to help visualize it: https://regex101.com/r/yzMkTg/1
+CHINESE_EXAMPLE_SPLITTING_REGEX = rf"^(.*[{CHINESE_CHARACTERS}{CHINESE_PUNCTUATION}]+[{CLOSE_QUOTE}]?)\s?([{OPEN_QUOTE}]?[{ENGLISH_CHARACTERS}].*)$"
 
 
 POS_MAPPING = {
@@ -42,10 +55,10 @@ def run_tests(df):
     assert not df["example_english"].eq("").any()
     assert (
         not df["example_simplified_chinese"]
-        .str.contains(r"[A-Za-z]]")
+        .str.contains(rf"[{ENGLISH_CHARACTERS}]]")
         .any()
     )
-    assert not df["example_english"].str.contains(r"[\u4e00-\u9fff]").any()
+    assert not df["example_english"].str.contains(rf"[{CHINESE_CHARACTERS}]").any()
 
 
 def map_or_raise_exception(mapping):
