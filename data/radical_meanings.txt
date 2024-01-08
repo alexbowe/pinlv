@@ -1,4 +1,3 @@
-# Borrowed from https://github.com/nieldlr/hanzi/blob/master/lib/data/radicalListWithMeaning.js
 "一":"one",
 "丨":"line",
 "丶":"dot",
