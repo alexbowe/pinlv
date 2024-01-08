@@ -4,6 +4,14 @@ from pinlv.chinese import load_routledge_chinese_word_frequency_data
 df = load_routledge_chinese_word_frequency_data()
 print(df.head(10))
 
+total = 0
+threshold = 0.5
+for i, row in df.iterrows():
+    total += row.normalized_frequency
+    cumulative_freq = total/df.normalized_frequency.sum()
+    print(f"{i}: {row.headword_simplified}\t{row.pinyin}\t{row.english_gloss}\t{cumulative_freq}")
+    if cumulative_freq >= threshold: break
+
 # TODO: Load the symbol frequencies
 # TODO: Load the radical database
 # TODO: Make dataframes of arbitrary text file globs
