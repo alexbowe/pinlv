@@ -5,11 +5,17 @@ import pandas as pd
 
 DATA_DIR = "data"
 ROUTLEDGE_CHINESE_WORD_FREQUENCY_RELATIVE_PATH = "routledge_chinese_word_frequency.txt"
-ROUTLEDGE_CHINESE_CHARACTER_FREQUENCY_RELATIVE_PATH = "routledge_chinese_character_frequency.txt"
+ROUTLEDGE_CHINESE_CHARACTER_FREQUENCY_RELATIVE_PATH = (
+    "routledge_chinese_character_frequency.txt"
+)
 RADICAL_MEANINGS_RELATIVE_PATH = "radical_meanings.txt"
 KRADFILE_RELATIVE_PATH = "kradfile-u.txt"
-ROUTLEDGE_CHINESE_WORD_FREQUENCY_FULL_PATH = os.path.join(DATA_DIR, ROUTLEDGE_CHINESE_WORD_FREQUENCY_RELATIVE_PATH)
-ROUTLEDGE_CHINESE_CHARACTER_FREQUENCY_FULL_PATH = os.path.join(DATA_DIR, ROUTLEDGE_CHINESE_CHARACTER_FREQUENCY_RELATIVE_PATH)
+ROUTLEDGE_CHINESE_WORD_FREQUENCY_FULL_PATH = os.path.join(
+    DATA_DIR, ROUTLEDGE_CHINESE_WORD_FREQUENCY_RELATIVE_PATH
+)
+ROUTLEDGE_CHINESE_CHARACTER_FREQUENCY_FULL_PATH = os.path.join(
+    DATA_DIR, ROUTLEDGE_CHINESE_CHARACTER_FREQUENCY_RELATIVE_PATH
+)
 RADICAL_MEANINGS_FULL_PATH = os.path.join(DATA_DIR, RADICAL_MEANINGS_RELATIVE_PATH)
 KRADFILE_FULL_PATH = os.path.join(DATA_DIR, KRADFILE_RELATIVE_PATH)
 
@@ -73,7 +79,9 @@ def map_or_raise_exception(mapping):
     return lambda input: mapping[input]
 
 
-def load_routledge_chinese_word_frequency_data(filepath=ROUTLEDGE_CHINESE_WORD_FREQUENCY_FULL_PATH):
+def load_routledge_chinese_word_frequency_data(
+    filepath=ROUTLEDGE_CHINESE_WORD_FREQUENCY_FULL_PATH,
+):
     num_header_lines = 4
     df = pd.read_csv(
         filepath,
@@ -133,7 +141,10 @@ def load_routledge_chinese_word_frequency_data(filepath=ROUTLEDGE_CHINESE_WORD_F
 
     return df
 
-def load_routledge_chinese_character_frequency_data(filename=ROUTLEDGE_CHINESE_CHARACTER_FREQUENCY_FULL_PATH):
+
+def load_routledge_chinese_character_frequency_data(
+    filename=ROUTLEDGE_CHINESE_CHARACTER_FREQUENCY_FULL_PATH,
+):
     def parse_line(line):
         line = line.strip()
         parts = line.split("\t")
@@ -143,23 +154,48 @@ def load_routledge_chinese_character_frequency_data(filename=ROUTLEDGE_CHINESE_C
         pinyin = parts[3].strip("/")
         hsk_level = int(parts[4].strip("()")) if len(parts) > 4 and parts[4] else None
         headwords = parts[5:]
-        headwords = [re.match(rf"^([{CHINESE_CHARACTERS}\[\]]+)(\d+)$", headword) for headword in headwords]
-        headwords = [{"simplified_chinese": match.group(1), "frequency_rank": int(match.group(2))} for match in headwords if match]
-        return {"frequency_rank": frequency_rank, "simplified_chinese": simplified_chinese, "traditional_chinese": traditional_chinese, "pinyin": pinyin, "hsk_level": hsk_level, "headwords": headwords}
+        headwords = [
+            re.match(rf"^([{CHINESE_CHARACTERS}\[\]]+)(\d+)$", headword)
+            for headword in headwords
+        ]
+        headwords = [
+            {
+                "simplified_chinese": match.group(1),
+                "frequency_rank": int(match.group(2)),
+            }
+            for match in headwords
+            if match
+        ]
+        return {
+            "frequency_rank": frequency_rank,
+            "simplified_chinese": simplified_chinese,
+            "traditional_chinese": traditional_chinese,
+            "pinyin": pinyin,
+            "hsk_level": hsk_level,
+            "headwords": headwords,
+        }
 
     with open(filename, "r") as f:
         lines = f.readlines()
     result = [parse_line(line) for line in lines[2:] if line]
     return result
 
+
 def load_radical_meanings(filename=RADICAL_MEANINGS_FULL_PATH):
     with open(filename, "r") as f:
         lines = f.readlines()
-    data = [(radical, meaning.rstrip()) for radical, meaning in [line.split(":") for line in lines]]
+    data = [
+        (radical, meaning.rstrip())
+        for radical, meaning in [line.split(":") for line in lines]
+    ]
     return {radical: meaning for radical, meaning in data}
+
 
 def load_radical_mapping(filename=KRADFILE_FULL_PATH):
     with open(filename, "r") as f:
         lines = f.readlines()
     lines = [line.rstrip() for line in lines if not line.startswith("#")]
-    return {hanzi.strip(): radicals.strip().split() for hanzi, radicals in [line.split(":") for line in lines]}
+    return {
+        hanzi.strip(): radicals.strip().split()
+        for hanzi, radicals in [line.split(":") for line in lines]
+    }
