@@ -25,7 +25,7 @@ for i, row in df.iterrows():
 # TODO: Add mnemonics for the radicals (maybe taken from pandaverse)
 
 #x = load_radical_mapping()
-#x = load_radical_meanings()
-x = load_routledge_chinese_character_frequency_data()
-hw = x[0]["headwords"]
-print(hw)
+x = load_radical_meanings()
+#x = load_routledge_chinese_character_frequency_data()
+#hw = x[0]["headwords"]
+print(x)

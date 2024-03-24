@@ -185,10 +185,11 @@ def load_radical_meanings(filename=RADICAL_MEANINGS_FULL_PATH):
     with open(filename, "r") as f:
         lines = f.readlines()
     data = [
-        (radical, meaning.rstrip())
+        (radical.strip(), pd.Series(meaning.strip().split("/")))
         for radical, meaning in [line.split(":") for line in lines]
     ]
-    return {radical: meaning for radical, meaning in data}
+    df = pd.DataFrame(data, columns=["Radical", "Meaning"])
+    return df
 
 
 def load_radical_mapping(filename=KRADFILE_FULL_PATH):
